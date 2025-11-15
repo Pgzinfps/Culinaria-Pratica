@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sabores&Co — Receitas</title>
+  <meta name="description" content="Site simples de culinária com receitas, busca e cartões de receita. Perfeito para colocar no GitHub Pages." />
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --accent:#ff6b35; --muted:#94a3b8; --glass: rgba(255,255,255,0.03);
+      --radius:14px; --maxw:1100px; --gap:18px; --fw: 500;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: linear-gradient(180deg,#081226 0%, #071024 100%); color:#e6eef8; -webkit-font-smoothing:antialiased;
+      display:flex; align-items:flex-start; justify-content:center; padding:32px;
+    }
+    .wrap{width:100%; max-width:var(--maxw)}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ff9a66);display:flex;align-items:center;justify-content:center;font-weight:700;color:#081226;font-size:20px}
+    h1{margin:0;font-size:20px}
+    .tag{color:var(--muted);font-size:13px}
+
+    .controls{display:flex;gap:12px;align-items:center}
+    .search{background:var(--glass);border:1px solid rgba(255,255,255,0.03);padding:10px 12px;border-radius:12px;min-width:260px}
+    .btn{background:var(--accent);border:none;padding:10px 14px;border-radius:10px;color:#081226;font-weight:700;cursor:pointer}
+
+    .hero{display:flex;gap:18px;align-items:center;background:linear-gradient(90deg, rgba(255,255,255,0.03), transparent);padding:22px;border-radius:16px;margin-bottom:20px}
+    .hero-left{flex:1}
+    .hero-right{width:300px}
+    .lead{font-size:28px;margin:0 0 8px}
+    .lead small{display:block;font-size:14px;color:var(--muted);margin-top:6px}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--gap)}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .img{height:140px;border-radius:10px;background-size:cover;background-position:center;margin-bottom:12px}
+    .title{font-weight:700;margin:0 0 6px}
+    .meta{color:var(--muted);font-size:13px}
+    .tags{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+    .tag-pill{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
+
+    footer{margin-top:22px;color:var(--muted);font-size:13px}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center;padding:24px}
+    .modal{background:#071024;padding:20px;border-radius:14px;max-width:900px;width:100%;box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+    .modal-grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .close{background:transparent;border:0;color:var(--muted);cursor:pointer}
+    .ingredients{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
+
+    /* responsive */
+    @media(max-width:880px){.modal-grid{grid-template-columns:1fr}}
+
+    /* tiny helpers */
+    .muted{color:var(--muted)}
+    .center{display:flex;align-items:center;gap:8px}
+    .subscribe{display:flex;gap:8px}
+    input,textarea{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:8px;color:inherit}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">S&Co</div>
+        <div>
+          <h1>Sabores&amp;Co</h1>
+          <div class="tag">Receitas fáceis para o dia a dia</div>
+        </div>
+      </div>
+      <div class="controls">
+        <input id="search" class="search" placeholder="Buscar por: arroz, vegan, rápido..." />
+        <button class="btn" id="newRecipeBtn">Nova receita</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-left">
+        <div class="lead">Receitas simples, saborosas e testadas em casa.
+          <small>Encontre receitas por tempo, tipo e ingredientes. Perfeito para iniciantes e quem cozinha com pressa.</small>
+        </div>
+        <div style="margin-top:12px" class="subscribe">
+          <input id="email" placeholder="Seu melhor e-mail" />
+          <button class="btn" id="subscribeBtn">Quero receber</button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="card" style="padding:12px">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Destaque</div>
+          <div style="font-weight:700">Bolo de banana sem açúcar</div>
+          <div class="muted" style="margin-top:8px">20 min • vegan opcional • fácil</div>
+        </div>
+      </div>
+    </section>
+
+    <main>
+      <div class="grid" id="recipesGrid"></div>
+    </main>
+
+    <footer>
+      <div>Feito com ❤️ — coloque este arquivo como <code>index.html</code> no seu repositório do GitHub para publicar com GitHub Pages.</div>
+    </footer>
+  </div>
+
+  <!-- modal -->
+  <div id="modal" class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong id="modalTitle"></strong>
+        <button class="close" id="closeModal">Fechar ✕</button>
+      </div>
+      <div class="modal-grid">
+        <div>
+          <div id="modalImage" style="height:220px;border-radius:10px;background-size:cover;background-position:center;margin-bottom:12px"></div>
+          <div id="modalDesc" class="muted"></div>
+          <h4 style="margin-top:12px">Modo de preparo</h4>
+          <div id="modalSteps" style="line-height:1.5"></div>
+        </div>
+        <aside>
+          <div class="ingredients">
+            <h4>Ingredientes</h4>
+            <ul id="modalIngredients"></ul>
+          </div>
+          <div style="margin-top:12px;color:var(--muted)">Tempo estimado: <span id="modalTime"></span></div>
+          <div style="margin-top:10px" id="modalTags" class="tags"></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Dados de exemplo — substitua por fetch() ou API quando quiser
+    const RECIPES = [
+      {
+        id:1, title: 'Bolo de Banana Rápido', img:'https://images.unsplash.com/photo-1542446659-3a9e5a1d1f4a',
+        desc:'Bolo fofinho feito com bananas maduras — sem açúcar opcional.',
+        time:'20 min', tags:['doce','rápido','vegano opcional'],
+        ingredients:['3 bananas maduras','2 ovos','1/2 xícara de óleo','1 xícara de farinha','1 colher de fermento'],
+        steps:['Amasse as bananas.','Misture os ovos e o óleo.','Adicione a farinha e o fermento.','Asse 35 minutos a 180°C.']
+      },
+      {
+        id:2, title:'Arroz Cremoso com Cogumelos', img:'https://images.unsplash.com/photo-1543353071-087092ec3933',
+        desc:'Arroz tipo risoto, cremoso e fácil de fazer na panela comum.',
+        time:'30 min', tags:['principal','vegetariano'],
+        ingredients:['1 xícara de arroz','200g cogumelos','1/2 cebola','caldo de legumes','queijo opcional'],
+        steps:['Refogue a cebola e cogumelos.','Adicione o arroz e o caldo aos poucos.','Cozinhe até ficar cremoso.','Finalize com queijo se desejar.']
+      },
+      {
+        id:3, title:'Salada de Grão-de-bico', img:'https://images.unsplash.com/photo-1543353071-087092ec3933',
+        desc:'Salada fresca, rica em proteínas e fácil de montar.',
+        time:'10 min', tags:['salada','rápido','vegano'],
+        ingredients:['1 lata de grão-de-bico','tomate','pepino','azeite','suco de limão'],
+        steps:['Misture os ingredientes.','Tempere com azeite e limão.','Sirva fria.']
+      }
+    ];
+
+    const grid = document.getElementById('recipesGrid');
+    const searchInput = document.getElementById('search');
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalImage = document.getElementById('modalImage');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalSteps = document.getElementById('modalSteps');
+    const modalIngredients = document.getElementById('modalIngredients');
+    const modalTime = document.getElementById('modalTime');
+    const modalTags = document.getElementById('modalTags');
+
+    function renderCard(recipe){
+      const el = document.createElement('div'); el.className='card';
+      el.innerHTML = `
+        <div class="img" style="background-image:url('${recipe.img}&w=800&q=60')"></div>
+        <div class="title">${recipe.title}</div>
+        <div class="meta">${recipe.desc}</div>
+        <div class="tags">${recipe.tags.map(t=>`<div class="tag-pill">${t}</div>`).join('')}</div>
+        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+          <div class="muted">${recipe.time}</div>
+          <button class="btn" data-id="${recipe.id}">Ver</button>
+        </div>
+      `;
+      grid.appendChild(el);
+    }
+
+    function loadRecipes(list){
+      grid.innerHTML='';
+      list.forEach(r=>renderCard(r));
+      // attach listeners
+      document.querySelectorAll('.card .btn').forEach(b=>b.addEventListener('click',e=>{
+        const id = Number(e.currentTarget.dataset.id);
+        openModal(RECIPES.find(x=>x.id===id));
+      }))
+    }
+
+    function openModal(recipe){
+      modalTitle.textContent = recipe.title;
+      modalImage.style.backgroundImage = `url('${recipe.img}&w=1200&q=80')`;
+      modalDesc.textContent = recipe.desc;
+      modalSteps.innerHTML = recipe.steps.map(s=>`<div>• ${s}</div>`).join('');
+      modalIngredients.innerHTML = recipe.ingredients.map(i=>`<li>${i}</li>`).join('');
+      modalTime.textContent = recipe.time;
+      modalTags.innerHTML = recipe.tags.map(t=>`<div class="tag-pill">${t}</div>`).join('');
+      modal.style.display = 'flex';
+    }
+
+    document.getElementById('closeModal').addEventListener('click',()=>{modal.style.display='none'});
+    modal.addEventListener('click',(e)=>{ if(e.target===modal) modal.style.display='none' });
+
+    // search
+    searchInput.addEventListener('input',()=>{
+      const q = searchInput.value.trim().toLowerCase();
+      if(!q) return loadRecipes(RECIPES);
+      const filtered = RECIPES.filter(r=>
+        r.title.toLowerCase().includes(q) || r.desc.toLowerCase().includes(q) || r.tags.join(' ').toLowerCase().includes(q) || r.ingredients.join(' ').toLowerCase().includes(q)
+      );
+      loadRecipes(filtered);
+    });
+
+    // subscribe (local demo)
+    document.getElementById('subscribeBtn').addEventListener('click',()=>{
+      const email = document.getElementById('email').value.trim();
+      if(!email || !email.includes('@')) return alert('Digite um e-mail válido.');
+      localStorage.setItem('sabores_email',email);
+      alert('Obrigado! Você será notificado (demo).');
+    });
+
+    // new recipe demo
+    document.getElementById('newRecipeBtn').addEventListener('click',()=>{
+      const title = prompt('Nome da receita:');
+      if(!title) return;
+      const r = {id:Date.now(), title, img:'https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642', desc:'Receita adicionada pelo usuário', time:'—', tags:['minha'], ingredients:[], steps:['Descrição não disponível.']};
+      RECIPES.unshift(r); loadRecipes(RECIPES);
+    });
+
+    // inicial
+    loadRecipes(RECIPES);
+  </script>
+</body>
+</html>
